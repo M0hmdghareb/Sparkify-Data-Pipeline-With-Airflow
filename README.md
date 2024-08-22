@@ -13,6 +13,8 @@ The ETL pipeline is structured as an Airflow DAG (Directed Acyclic Graph) with t
 3. **Loading Dimension Tables**: Populate dimension tables such as `users`, `songs`, `artists`, and `time`.
 4. **Running Data Quality Checks**: Validate the data integrity in the Redshift tables.
 
+![DAG](./DAG.png)
+
 ## Prerequisites
 
 ### AWS Setup
@@ -55,9 +57,19 @@ The `StageToRedshiftOperator` is designed to load JSON files from S3 into Redshi
 
 The `DataQualityOperator` runs SQL-based tests to validate the data in Redshift. It checks for conditions such as the presence of NULL values in critical columns. If a test fails, the operator raises an exception, causing the task to retry and eventually fail if the issue persists.
 
-## Running the Project
+## Schema for Song Play Analysis
 
-After configuring the DAG, run the following command to start the Airflow web server:
+#### Fact Table
+1. **songplays** - records in event data associated with song plays i.e. records with page ``NextSong``
+        songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
+#### Dimension Tables
+2. **users** - users in the app
+        user_id, first_name, last_name, gender, level
+3. **songs** - songs in music database
+        song_id, title, artist_id, year, duration
+4. **artists** - artists in music database
+        artist_id, name, location, lattitude, longitude
+5. **time** - timestamps of records in **songplays** broken down into specific units
+     - start_time, hour, day, week, month, year, weekday
 
-```bash
-/opt/airflow/start.sh
+ ![img](./sp_erd.png)      
